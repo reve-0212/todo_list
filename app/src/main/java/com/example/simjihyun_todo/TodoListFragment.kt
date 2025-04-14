@@ -1,6 +1,7 @@
 package com.example.simjihyun_todo
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
@@ -11,6 +12,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
@@ -21,13 +24,29 @@ import com.example.simjihyun_todo.databinding.FragmentTodoListBinding
 import com.example.simjihyun_todo.databinding.ItemTodoBinding
 import androidx.core.graphics.drawable.toDrawable
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
+@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class TodoListFragment : Fragment() {
   //  먼저 todoListBinding 에 null 을 넣는다
   private var todoListBinding: FragmentTodoListBinding? = null
 
   //  외부에서는 binding 을 통해서 안전하게 사용한다
   private val binding get() = todoListBinding!!
+
+  private val todoActivityLauncher = registerForActivityResult(
+    ActivityResultContracts.StartActivityForResult()
+  ) { result ->
+    if (result.resultCode == Activity.RESULT_OK) {
+      val isUpdated = result.data?.getBooleanExtra("updated", false) ?: false
+      if (isUpdated) {
+        reload()
+      }
+    }
+  }
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -156,23 +175,25 @@ class TodoListFragment : Fragment() {
     val dbHelper = DBHelper(requireContext())
     val db = dbHelper.readableDatabase
     val cursor = db.rawQuery(
-      "select id, name, start_date, end_date, is_completed, is_important from TODO_LIST",
+      "select id, name, start_date, end_date, is_completed, is_important, memo from TODO_LIST",
       null
     )
     val todoList = mutableListOf<TodoItem>()
     val completedList = mutableListOf<TodoItem>()
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
 //    다음 줄이 있다면 0번째 값(name)과 1번째 값(is_completed) 를
 //    완료 여부에 따라 completedList 와 todoList 로 나눠서 저장한다
     while (cursor.moveToNext()) {
       val id = cursor.getInt(0)
       val name = cursor.getString(1)
-      val startDate = SimpleDateFormat("yyyy-MM-dd").parse(cursor.getString(2))!!
-      val endDate = SimpleDateFormat("yyyy-MM-dd").parse(cursor.getString(3))!!
+      val startDate = LocalDateTime.parse(cursor.getString(2),formatter)
+      val endDate = LocalDateTime.parse(cursor.getString(3),formatter)
       val isCompleted = cursor.getString(4) == "Y"
       val isImportant = cursor.getString(5) == "Y"
+      val memo = cursor.getString(6) ?: ""
 
-      val item = TodoItem(id, name, startDate, endDate, isCompleted, isImportant)
+      val item = TodoItem(id, name, startDate, endDate, isCompleted, isImportant, memo)
       if (item.isCompleted) {
         completedList.add(item)
       } else {
@@ -195,8 +216,29 @@ class TodoListFragment : Fragment() {
     db.close()
 
 //    각각의 RecyclerView 에 어댑터를 연결한다
-    todoRecycler.adapter = TodoAdapter(todoList, false) { reload() }
-    completedRecycler.adapter = TodoAdapter(completedList, true) { reload() }
+    todoRecycler.adapter = TodoAdapter(todoList, false, { reload() }) { todo ->
+      val intent = Intent(requireContext(), TodoActivity::class.java)
+      val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+      intent.putExtra("todo_id", todo.id)
+      intent.putExtra("todo_start_date", todo.startDate.format(formatter))
+      intent.putExtra("todo_end_date", todo.endDate.format(formatter))
+      intent.putExtra("todo_name", todo.name)
+      intent.putExtra("todo_is_important", todo.isImportant)
+      intent.putExtra("todo_is_completed", todo.isCompleted)
+
+      todoActivityLauncher.launch(intent)
+    }
+    completedRecycler.adapter = TodoAdapter(completedList, true, { reload() }) { todo ->
+      val intent = Intent(requireContext(), TodoActivity::class.java)
+      intent.putExtra("todo_id", todo.id)
+      intent.putExtra("todo_start_date", todo.startDate.format(formatter))
+      intent.putExtra("todo_end_date", todo.endDate.format(formatter))
+      intent.putExtra("todo_name", todo.name)
+      intent.putExtra("todo_is_important", todo.isImportant)
+      intent.putExtra("todo_is_completed", todo.isCompleted)
+
+      todoActivityLauncher.launch(intent)
+    }
   }
 
   //  체크박스를 누르면 리스트를 새로고침한다
@@ -214,7 +256,8 @@ class TodoAdapter(
 //  완료된 항목인지 아닌지 구분한다
   private val isCompletedList: Boolean,
 //  체크박스를 클릭하면 호출될 콜백함수
-  private val onStatusChanged: () -> Unit
+  private val onStatusChanged: () -> Unit,
+  private val onItemClick: (TodoItem) -> Unit
 ) :
   RecyclerView.Adapter<TodoAdapter.TodoViewHolder>() {
 
@@ -294,6 +337,7 @@ class TodoAdapter(
       db.close()
       todo.isImportant = false
     }
+
 //    체크박스를 누르면 isChecked 라면 Y, 아니라면 N 으로 바꾼다
 //    그리고 화면을 새로고침한다
     binding.todoCheckbox.setOnCheckedChangeListener { _, isChecked ->
@@ -309,45 +353,7 @@ class TodoAdapter(
 
 //    항목을 클릭하면 TodoActivity 로 간다
     holder.itemView.setOnClickListener {
-      val intent = Intent(holder.itemView.context,TodoActivity::class.java)
-      intent.putExtra("todo_id",todo.id)
-      intent.putExtra("todo_start_date",todo.startDate)
-      intent.putExtra("todo_end_date",todo.endDate)
-      intent.putExtra("todo_name",todo.name)
-      intent.putExtra("todo_is_important",todo.isImportant)
-      intent.putExtra("todo_is_completed",todo.isCompleted)
-      holder.itemView.context.startActivity(intent)
-
-//      val dbHelper = DBHelper(holder.itemView.context)
-//      val db = dbHelper.readableDatabase
-//      val cursor = db.rawQuery(
-//        "select start_date, end_date, is_important from TODO_LIST where id = ?",
-//        arrayOf(todo.id.toString())
-//      )
-//
-////      첫번째 커서부터 (좌측 열에서부터) 하나씩 값을 가져와 detail 에 넣는다
-//      var detail = ""
-//      if (cursor.moveToFirst()) {
-//        val start = cursor.getString(0)
-//        val end = cursor.getString(1)
-//        val important =
-//          if (cursor.getString(2) == "Y") {
-//            "중요함"
-//          } else {
-//            "보통"
-//          }
-//        detail = " 시작일 : $start\n 종료일 : $end\n 중요도 : $important"
-//      }
-//
-//      cursor.close()
-//      db.close()
-
-//      alertdialog 로 detail 을 출력한다
-//      AlertDialog.Builder(holder.itemView.context)
-//        .setTitle("할 일 상세")
-//        .setMessage(detail)
-//        .setPositiveButton("확인", null)
-//        .show()
+      onItemClick(todo)
     }
   }
 }

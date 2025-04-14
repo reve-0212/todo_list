@@ -32,7 +32,8 @@
       android:layout_height="wrap_content"
       android:layout_marginVertical="5dp"
       android:gravity="center_vertical"
-      android:orientation="horizontal">
+      android:orientation="horizontal"
+      android:outlineAmbientShadowColor="@color/black">
 
     <CheckBox
         android:id="@+id/todo_checkbox"
@@ -41,11 +42,13 @@
         android:layout_weight="1" />
 
     <TextView
+        android:id="@+id/todo_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="3"
         android:text="이름"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <ImageView
         android:id="@+id/blank_star"
@@ -71,22 +74,135 @@
 
   <LinearLayout
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:gravity="center_vertical"
-      android:orientation="horizontal">
-
-    <TextView
+      android:layout_height="0dp"
+      android:layout_weight="1"
+      android:gravity="center_horizontal"
+      android:orientation="vertical"
+      android:outlineAmbientShadowColor="@color/black">
+    <!--  마감일 수정-->
+    <LinearLayout
+        android:id="@+id/update_end_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="5dp"
-        android:drawablePadding="20dp"
-        android:paddingStart="25dp"
-        android:text="마감일"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:drawableStartCompat="@drawable/calendar_black"
-        tools:ignore="RtlSymmetry" />
+        android:layout_marginVertical="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:outlineAmbientShadowColor="@color/black">
+
+      <ImageView
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:src="@drawable/calendar_black" />
+
+      <TextView
+          android:id="@+id/update_end_date_text"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="3"
+          android:text="마감일 수정하기"
+          android:textAlignment="center"
+          android:textSize="20sp"
+          android:textStyle="bold"
+          tools:ignore="RtlSymmetry" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginHorizontal="10dp"
+        android:background="#F0F0F0" />
+
+    <!--  시간 수정-->
+    <LinearLayout
+        android:id="@+id/update_end_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_marginVertical="10dp">
+
+      <ImageView
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:src="@drawable/black_clock1" />
+
+      <TextView
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_marginVertical="5dp"
+          android:layout_weight="3"
+          android:text="마감 시간 수정하기"
+          android:textAlignment="center"
+          android:textSize="20sp"
+          android:textStyle="bold"
+          tools:ignore="RtlSymmetry"
+          android:id="@+id/update_end_time_text"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginHorizontal="10dp"
+        android:background="#F0F0F0" />
+
+    <!--  메모-->
+    <LinearLayout
+        android:id="@+id/update_memo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_marginVertical="10dp">
+
+      <ImageView
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:src="@drawable/black_memo" />
+
+      <TextView
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_marginVertical="5dp"
+          android:layout_weight="3"
+          android:text="메모"
+          android:textAlignment="center"
+          android:textSize="20sp"
+          android:textStyle="bold"
+          tools:ignore="RtlSymmetry" />
+    </LinearLayout>
   </LinearLayout>
 
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="2dp"
+      android:layout_marginHorizontal="10dp"
+      android:background="#F0F0F0" />
+
+  <!--  삭제 및 생성일자 확인용-->
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center_vertical"
+      android:orientation="horizontal"
+      android:paddingVertical="10dp">
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:text="생성일자"
+        android:textAlignment="center"
+        android:textSize="20sp" />
+
+    <ImageView
+        android:id="@+id/delete_todo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:src="@drawable/black_trash_bin" />
+  </LinearLayout>
 
 </LinearLayout>

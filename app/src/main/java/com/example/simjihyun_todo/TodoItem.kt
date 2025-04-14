@@ -1,12 +1,13 @@
 package com.example.simjihyun_todo
 
-import java.util.Date
+import java.time.LocalDateTime
 
 data class TodoItem(
   val id: Int,
   var name: String,
-  var startDate: Date,
-  var endDate: Date,
+  var startDate: LocalDateTime,
+  var endDate: LocalDateTime,
   var isCompleted: Boolean,
-  var isImportant: Boolean
+  var isImportant: Boolean,
+  var memo: String
 )

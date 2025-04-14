@@ -14,8 +14,10 @@ import androidx.fragment.app.replace
 import com.example.simjihyun_todo.databinding.ActivityMainBinding
 import com.example.simjihyun_todo.databinding.LayoutBottomSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
   private lateinit var binding: ActivityMainBinding
@@ -86,12 +88,16 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 //      저장 버튼을 누르면 name 이 null 이 아닐 경우에만 db에 저장한다
       sheetBinding.btnSave.setOnClickListener {
         val name = sheetBinding.inputName.text.toString()
+        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val startDateStr = formatter.format(selectedStartDate)
+        val endDateStr = formatter.format(selectedEndDate)
+
         if (name.isNotBlank()) {
           val dbHelper = DBHelper(this)
           val db = dbHelper.writableDatabase
           db.execSQL(
             "insert into TODO_LIST(name,start_date, end_date) values (?,?,?)",
-            arrayOf(name, selectedStartDate, selectedEndDate)
+            arrayOf(name, startDateStr, endDateStr)
           )
           db.close()
 
