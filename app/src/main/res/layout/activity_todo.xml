@@ -11,6 +11,7 @@
     tools:context=".TodoActivity">
 
   <androidx.appcompat.widget.Toolbar
+      android:id="@+id/toolbar"
       android:layout_width="match_parent"
       android:layout_height="?attr/actionBarSize"
       android:background="?attr/colorPrimary"
@@ -81,6 +82,49 @@
       android:outlineAmbientShadowColor="@color/black">
     <!--  마감일 수정-->
     <LinearLayout
+        android:id="@+id/update_start_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:outlineAmbientShadowColor="@color/black">
+
+      <ImageView
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:src="@drawable/calendar_black" />
+
+      <TextView
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:text="시작일"
+          android:textAlignment="center"
+          android:textSize="20sp"
+          android:textStyle="bold" />
+
+      <TextView
+          android:id="@+id/update_start_date_text"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="3"
+          android:text="시작일 수정하기"
+          android:textAlignment="center"
+          android:textSize="20sp"
+          android:textStyle="bold"
+          tools:ignore="RtlSymmetry" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginHorizontal="10dp"
+        android:background="#F0F0F0" />
+
+    <!--  마감일 수정-->
+    <LinearLayout
         android:id="@+id/update_end_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -94,6 +138,15 @@
           android:layout_height="wrap_content"
           android:layout_weight="1"
           android:src="@drawable/calendar_black" />
+
+      <TextView
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:text="마감일"
+          android:textAlignment="center"
+          android:textSize="20sp"
+          android:textStyle="bold" />
 
       <TextView
           android:id="@+id/update_end_date_text"
@@ -118,17 +171,27 @@
         android:id="@+id/update_end_time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginVertical="10dp"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:layout_marginVertical="10dp">
+        android:orientation="horizontal">
 
       <ImageView
           android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_weight="1"
-          android:src="@drawable/black_clock1" />
+          android:src="@drawable/black_clock" />
 
       <TextView
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:text="마감 시간"
+          android:textAlignment="center"
+          android:textSize="20sp"
+          android:textStyle="bold" />
+
+      <TextView
+          android:id="@+id/update_end_time_text"
           android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_marginVertical="5dp"
@@ -137,8 +200,7 @@
           android:textAlignment="center"
           android:textSize="20sp"
           android:textStyle="bold"
-          tools:ignore="RtlSymmetry"
-          android:id="@+id/update_end_time_text"/>
+          tools:ignore="RtlSymmetry" />
     </LinearLayout>
 
     <View
@@ -149,12 +211,12 @@
 
     <!--  메모-->
     <LinearLayout
-        android:id="@+id/update_memo"
+        android:id="@+id/update_memo_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginVertical="10dp"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:layout_marginVertical="10dp">
+        android:orientation="horizontal">
 
       <ImageView
           android:layout_width="0dp"
@@ -173,6 +235,14 @@
           android:textStyle="bold"
           tools:ignore="RtlSymmetry" />
     </LinearLayout>
+
+    <EditText
+        android:id="@+id/update_memo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="25dp"
+        android:hint="여기에 메모를 작성하세요"
+        android:textAlignment="center" />
   </LinearLayout>
 
   <View
@@ -187,22 +257,23 @@
       android:layout_height="wrap_content"
       android:gravity="center_vertical"
       android:orientation="horizontal"
-      android:paddingVertical="10dp">
+      android:paddingVertical="10dp"
+      android:id="@+id/delete_todo_layout">
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:src="@drawable/black_trash_bin" />
 
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="3"
-        android:text="생성일자"
+        android:text="삭제하기"
+        android:textSize="20sp"
         android:textAlignment="center"
-        android:textSize="20sp" />
-
-    <ImageView
-        android:id="@+id/delete_todo"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:src="@drawable/black_trash_bin" />
+        android:textStyle="bold"/>
   </LinearLayout>
 
 </LinearLayout>

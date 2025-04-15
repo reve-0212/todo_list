@@ -6,45 +6,103 @@
     android:background="@color/white"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:paddingVertical="10dp">
 
-  <EditText
-      android:id="@+id/input_name"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:hint="이름을 입력하세요"
-      android:textAlignment="center" />
-
+  <!--  이름 입력-->
   <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:gravity="center_vertical"
       android:orientation="horizontal"
-      android:paddingTop="16dp">
+      android:layout_marginHorizontal="10dp">
 
-    <TextView
-        android:id="@+id/end_date_button"
+    <EditText
+        android:id="@+id/input_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="6"
+        android:hint="이름을 입력하세요"
+        android:textAlignment="center" />
+
+    <ImageButton
+        android:id="@+id/btn_save"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:background="@drawable/rounded_button_background"
         android:paddingVertical="5dp"
-        android:paddingHorizontal="10dp"
-        android:gravity="center"
-        android:text="기한 설정"
-        android:textAlignment="center"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        app:drawableStartCompat="@drawable/calendar_white" />
+        android:src="@drawable/arrow_top_white" />
 
-    <Button
-        android:id="@+id/btn_save"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="10dp"
-        android:layout_weight="1.5"
-        android:text="저장" />
   </LinearLayout>
+
+  <!--  버튼들-->
+  <HorizontalScrollView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:fillViewport="true"
+      android:scrollbars="none">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="16dp">
+
+      <TextView
+          android:id="@+id/start_date_button"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_marginHorizontal="10dp"
+          android:layout_weight="1"
+          android:background="@drawable/rounded_button_background"
+          android:drawablePadding="5dp"
+          android:gravity="center"
+          android:paddingHorizontal="10dp"
+          android:paddingVertical="5dp"
+          android:text="시작일"
+          android:textAlignment="center"
+          android:textColor="@color/white"
+          android:textSize="16sp"
+          app:drawableStartCompat="@drawable/calendar_white" />
+
+      <TextView
+          android:id="@+id/end_date_button"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_marginHorizontal="10dp"
+          android:layout_weight="1"
+          android:background="@drawable/rounded_button_background"
+          android:drawablePadding="5dp"
+          android:gravity="center"
+          android:paddingHorizontal="10dp"
+          android:paddingVertical="5dp"
+          android:text="마감일"
+          android:textAlignment="center"
+          android:textColor="@color/white"
+          android:textSize="16sp"
+          app:drawableStartCompat="@drawable/calendar_white" />
+
+      <TextView
+          android:id="@+id/end_time_button"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_marginHorizontal="10dp"
+          android:layout_weight="1"
+          android:background="@drawable/rounded_button_background"
+          android:drawablePadding="5dp"
+          android:gravity="center"
+          android:paddingHorizontal="10dp"
+          android:paddingVertical="5dp"
+          android:text="시간"
+          android:textAlignment="center"
+          android:textColor="@color/white"
+          android:textSize="16sp"
+          app:drawableStartCompat="@drawable/white_clock" />
+
+
+    </LinearLayout>
+  </HorizontalScrollView>
 
 
 </LinearLayout>

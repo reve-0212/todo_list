@@ -29,6 +29,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+//start date 가 오늘인것만
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class TodoListFragment : Fragment() {
   //  먼저 todoListBinding 에 null 을 넣는다
@@ -67,6 +68,8 @@ class TodoListFragment : Fragment() {
   @SuppressLint("Recycle", "SimpleDateFormat")
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
+
+    (activity as? MainActivity)?.setToolbarTitle("오늘 할 일")
 
     //    todo_recycler 를 찾아서 recyclerView 에 할당한다
     val todoRecycler = binding.todoRecycler
@@ -171,12 +174,17 @@ class TodoListFragment : Fragment() {
     todoRecycler.layoutManager = LinearLayoutManager(requireContext())
     completedRecycler.layoutManager = LinearLayoutManager(requireContext())
 
-//    TODO_LIST 에 있는 모든 name과 is_completed 를 가져온다
+    val todayDate = LocalDateTime.now()
+    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    Log.d("todoList", "todayDate : ${todayDate.format(dateFormatter)}")
+    val today = todayDate.format(dateFormatter)
+
+//    TODO_LIST 에 있는 오늘 날짜의 모든 name과 is_completed 를 가져온다
     val dbHelper = DBHelper(requireContext())
     val db = dbHelper.readableDatabase
     val cursor = db.rawQuery(
-      "select id, name, start_date, end_date, is_completed, is_important, memo from TODO_LIST",
-      null
+      "select id, name, start_date, end_date, is_completed, is_important, memo from TODO_LIST where date(start_date) = date(?)",
+      arrayOf(today)
     )
     val todoList = mutableListOf<TodoItem>()
     val completedList = mutableListOf<TodoItem>()
@@ -187,8 +195,8 @@ class TodoListFragment : Fragment() {
     while (cursor.moveToNext()) {
       val id = cursor.getInt(0)
       val name = cursor.getString(1)
-      val startDate = LocalDateTime.parse(cursor.getString(2),formatter)
-      val endDate = LocalDateTime.parse(cursor.getString(3),formatter)
+      val startDate = LocalDateTime.parse(cursor.getString(2), formatter)
+      val endDate = LocalDateTime.parse(cursor.getString(3), formatter)
       val isCompleted = cursor.getString(4) == "Y"
       val isImportant = cursor.getString(5) == "Y"
       val memo = cursor.getString(6) ?: ""
@@ -225,6 +233,7 @@ class TodoListFragment : Fragment() {
       intent.putExtra("todo_name", todo.name)
       intent.putExtra("todo_is_important", todo.isImportant)
       intent.putExtra("todo_is_completed", todo.isCompleted)
+      intent.putExtra("todo_memo", todo.memo)
 
       todoActivityLauncher.launch(intent)
     }
@@ -236,6 +245,7 @@ class TodoListFragment : Fragment() {
       intent.putExtra("todo_name", todo.name)
       intent.putExtra("todo_is_important", todo.isImportant)
       intent.putExtra("todo_is_completed", todo.isCompleted)
+      intent.putExtra("todo_memo", todo.memo)
 
       todoActivityLauncher.launch(intent)
     }
@@ -250,6 +260,7 @@ class TodoListFragment : Fragment() {
   }
 }
 
+@Suppress("TYPE_INTERSECTION_AS_REIFIED_WARNING")
 class TodoAdapter(
 //  항목 이름 리스트
   private val todos: List<TodoItem>,

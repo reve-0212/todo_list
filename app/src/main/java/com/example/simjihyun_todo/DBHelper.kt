@@ -3,6 +3,7 @@ package com.example.simjihyun_todo
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -10,7 +11,8 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "todoList", null, 1
   override fun onCreate(db: SQLiteDatabase?) {
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
     val startDate = LocalDateTime.now()
-    val endDate = LocalDateTime.now()
+//    오늘 날을 기준으로 23시 59분 59 초까지
+    val endDate = LocalDate.now().atTime(23,59,59)
 
 //    db 생성
     db?.execSQL("create table TODO_LIST(" +

@@ -11,6 +11,7 @@
     tools:context=".MainActivity">
 
   <androidx.appcompat.widget.Toolbar
+      android:id="@+id/toolbar"
       android:layout_width="match_parent"
       android:layout_height="?attr/actionBarSize"
       android:background="?attr/colorPrimary"
@@ -21,7 +22,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="todoList"
+        android:text="오늘 할 일"
         android:textColor="#FFFFFF"
         android:textSize="20sp" />
   </androidx.appcompat.widget.Toolbar>
@@ -42,7 +43,9 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="right"
-        android:text="일정 등록하기" />
+        android:text="일정 등록하기"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="10dp"/>
   </FrameLayout>
 
 
@@ -60,7 +63,26 @@
         android:layout_weight="1"
         android:background="?attr/colorPrimary"
         android:paddingVertical="10dp"
-        android:text="목록"
+        android:text="오늘"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="2dp"
+        android:layout_height="match_parent"
+        android:background="#FFFFFF" />
+
+
+    <TextView
+        android:id="@+id/future_todo_list_show"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="?attr/colorPrimary"
+        android:paddingVertical="10dp"
+        android:text="다음"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
