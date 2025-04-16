@@ -1,5 +1,6 @@
 package com.example.simjihyun_todo
 
+import RecordTodoFragment
 import android.annotation.SuppressLint
 import android.app.ComponentCaller
 import android.app.DatePickerDialog
@@ -16,6 +17,7 @@ import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.example.simjihyun_todo.databinding.ActivityMainBinding
+import com.example.simjihyun_todo.databinding.FragmentRecordTodoBinding
 import com.example.simjihyun_todo.databinding.LayoutBottomSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.text.SimpleDateFormat

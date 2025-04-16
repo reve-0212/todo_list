@@ -7,6 +7,7 @@ data class TodoItem(
   var name: String,
   var startDate: LocalDateTime,
   var endDate: LocalDateTime,
+  var completeDate: LocalDateTime?,
   var isCompleted: Boolean,
   var isImportant: Boolean,
   var memo: String

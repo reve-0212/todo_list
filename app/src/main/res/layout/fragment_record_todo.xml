@@ -6,19 +6,13 @@
     android:layout_marginVertical="10dp"
     android:background="@color/white"
     android:gravity="center_horizontal"
-    android:orientation="vertical"
-    tools:context=".RecordTodoFragment">
+    android:orientation="vertical">
 
-  <TextView
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:text="지금까지 한 일"
-      android:textAlignment="center"
-      android:textSize="20sp" />
-
+<!--  한일 못한일-->
   <LinearLayout
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
+      android:layout_height="0dp"
+      android:layout_weight="1"
       android:gravity="center_vertical"
       android:orientation="horizontal">
 
@@ -26,11 +20,11 @@
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:layout_weight="1"
         android:background="@drawable/setting_mini_layout"
         android:gravity="center"
         android:orientation="vertical"
-        android:layout_margin="10dp"
         android:paddingVertical="30dp">
 
       <TextView
@@ -42,6 +36,7 @@
           android:textStyle="bold" />
 
       <TextView
+          android:id="@+id/what_i_do_text"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:text="n"
@@ -54,11 +49,11 @@
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="center"
+        android:layout_margin="10dp"
         android:layout_weight="1"
         android:background="@drawable/setting_mini_layout"
+        android:gravity="center"
         android:orientation="vertical"
-        android:layout_margin="10dp"
         android:paddingVertical="30dp">
 
       <TextView
@@ -70,6 +65,7 @@
           android:textStyle="bold" />
 
       <TextView
+          android:id="@+id/what_i_dont_text"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:text="n"
@@ -77,8 +73,12 @@
           android:textSize="50sp"
           android:textStyle="bold" />
     </LinearLayout>
-
-
   </LinearLayout>
+
+  <com.github.mikephil.charting.charts.BarChart
+      android:id="@+id/todo_bar_chart"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="2"/>
 
 </LinearLayout>

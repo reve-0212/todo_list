@@ -183,7 +183,7 @@ class TodoListFragment : Fragment() {
     val dbHelper = DBHelper(requireContext())
     val db = dbHelper.readableDatabase
     val cursor = db.rawQuery(
-      "select id, name, start_date, end_date, is_completed, is_important, memo from TODO_LIST where date(start_date) = date(?)",
+      "select id, name, start_date, end_date, complete_date, is_completed, is_important, memo from TODO_LIST where date(start_date) = date(?)",
       arrayOf(today)
     )
     val todoList = mutableListOf<TodoItem>()
@@ -197,11 +197,21 @@ class TodoListFragment : Fragment() {
       val name = cursor.getString(1)
       val startDate = LocalDateTime.parse(cursor.getString(2), formatter)
       val endDate = LocalDateTime.parse(cursor.getString(3), formatter)
-      val isCompleted = cursor.getString(4) == "Y"
-      val isImportant = cursor.getString(5) == "Y"
-      val memo = cursor.getString(6) ?: ""
+      val completeDate = cursor.getString(4)
+      val completeDateParse = if (completeDate.isNullOrEmpty()) {
+        null
+      } else {
+        LocalDateTime.parse(completeDate, formatter)
+      }
+      val isCompleted = cursor.getString(5) == "Y"
+      val isImportant = cursor.getString(6) == "Y"
+      val memo = cursor.getString(7) ?: ""
 
-      val item = TodoItem(id, name, startDate, endDate, isCompleted, isImportant, memo)
+      val item =
+        TodoItem(
+          id, name, startDate, endDate,
+          completeDateParse, isCompleted, isImportant, memo
+        )
       if (item.isCompleted) {
         completedList.add(item)
       } else {
@@ -349,14 +359,20 @@ class TodoAdapter(
       todo.isImportant = false
     }
 
-//    체크박스를 누르면 isChecked 라면 Y, 아니라면 N 으로 바꾼다
+//    체크박스를 누르면 completeDate 에 값을 저장한다
+//    isChecked 라면 Y, 아니라면 N 으로 바꾼다
 //    그리고 화면을 새로고침한다
     binding.todoCheckbox.setOnCheckedChangeListener { _, isChecked ->
       val dbHelper = DBHelper(holder.itemView.context)
       val db = dbHelper.writableDatabase
+      val now = LocalDateTime.now()
+      val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+
+      val completeDateFormat = if(isChecked) now.format(formatter) else null
+
       db.execSQL(
-        "update TODO_LIST set is_completed = ? where id = ?",
-        arrayOf(if (isChecked) "Y" else "N", todo.id)
+        "update TODO_LIST set complete_date=?, is_completed = ? where id = ?",
+        arrayOf(completeDateFormat, if (isChecked) "Y" else "N", todo.id)
       )
       db.close()
       onStatusChanged()

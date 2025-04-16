@@ -234,7 +234,7 @@ class FutureTodoListFragment : Fragment() {
     val dbHelper = DBHelper(requireContext())
     val db = dbHelper.writableDatabase
     var cursor = db.rawQuery(
-      "select id, name, start_date, end_date, is_completed, is_important, memo " +
+      "select id, name, start_date, end_date, complete_date, is_completed, is_important, memo " +
               "from TODO_LIST where date(start_date) = date(?)", arrayOf(selectedDate)
     )
 
@@ -248,11 +248,18 @@ class FutureTodoListFragment : Fragment() {
       val name = cursor.getString(1)
       val startDate = LocalDateTime.parse(cursor.getString(2), formatter)
       val endDate = LocalDateTime.parse(cursor.getString(3), formatter)
-      val isCompleted = cursor.getString(4) == "Y"
-      val isImportant = cursor.getString(5) == "Y"
-      val memo = cursor.getString(6) ?: ""
+      val completeDate = cursor.getString(4)
+      val completeDateParse = if (completeDate.isNullOrEmpty()) {
+        null
+      } else {
+        LocalDateTime.parse(completeDate, formatter)
+      }
+      val isCompleted = cursor.getString(5) == "Y"
+      val isImportant = cursor.getString(6) == "Y"
+      val memo = cursor.getString(7) ?: ""
 
-      val item = TodoItem(id, name, startDate, endDate, isCompleted, isImportant, memo)
+      val item =
+        TodoItem(id, name, startDate, endDate, completeDateParse, isCompleted, isImportant, memo)
       if (item.isCompleted) {
         futureCompletedTodoList.add(item)
       } else {
@@ -283,7 +290,7 @@ class FutureTodoListFragment : Fragment() {
     val dbHelper = DBHelper(requireContext())
     val db = dbHelper.writableDatabase
     var cursor = db.rawQuery(
-      "select id, name, start_date, end_date, is_completed, is_important, memo " +
+      "select id, name, start_date, end_date, complete_date, is_completed, is_important, memo " +
               "from TODO_LIST where date(start_date) = date(?)", arrayOf(selectedDate)
     )
 
@@ -296,11 +303,17 @@ class FutureTodoListFragment : Fragment() {
       val name = cursor.getString(1)
       val startDate = LocalDateTime.parse(cursor.getString(2), formatter)
       val endDate = LocalDateTime.parse(cursor.getString(3), formatter)
+      val completeDate = cursor.getString(4)
+      val completeDateParse = if (completeDate.isNullOrEmpty()) {
+        null
+      } else {
+        LocalDateTime.parse(completeDate, formatter)
+      }
       val isCompleted = cursor.getString(4) == "Y"
       val isImportant = cursor.getString(5) == "Y"
       val memo = cursor.getString(6) ?: ""
 
-      val item = TodoItem(id, name, startDate, endDate, isCompleted, isImportant, memo)
+      val item = TodoItem(id, name, startDate, endDate, completeDateParse, isCompleted, isImportant, memo)
       if (item.isCompleted) {
         futureCompletedTodoList.add(item)
       } else {

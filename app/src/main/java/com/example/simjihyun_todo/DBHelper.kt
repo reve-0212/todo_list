@@ -19,7 +19,8 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "todoList", null, 1
             "id integer primary key autoincrement, " +
             "name varchar(100) not null," +
             "start_date varchar(100) not null, " +
-            "end_date varchar(100) not null," +
+            "end_date varchar(100) not null, " +
+            "complete_date varchar(100), " +
             "is_completed char(1) not null default 'N', " +
             "is_important char(1) not null default 'N'," +
             "memo varchar(200) )"
@@ -31,7 +32,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "todoList", null, 1
   }
 
   override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-    TODO("Not yet implemented")
+//    return false
   }
 
 }

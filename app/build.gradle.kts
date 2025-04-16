@@ -44,4 +44,5 @@ dependencies {
   androidTestImplementation(libs.androidx.espresso.core)
   implementation("androidx.fragment:fragment-ktx:1.8.6")
   implementation("androidx.preference:preference-ktx:1.2.1")
+  implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }
