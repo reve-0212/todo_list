@@ -1,14 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginVertical="10dp"
+    android:background="@color/white"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
     tools:context=".RecordTodoFragment">
 
-  <!-- TODO: Update blank fragment layout -->
   <TextView
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:text="@string/hello_blank_fragment" />
+      android:layout_height="wrap_content"
+      android:text="지금까지 한 일"
+      android:textAlignment="center"
+      android:textSize="20sp" />
 
-</FrameLayout>
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center_vertical"
+      android:orientation="horizontal">
+
+    <!--   지금까지 한 일-->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@drawable/setting_mini_layout"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_margin="10dp"
+        android:paddingVertical="30dp">
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="내가 한 일"
+          android:textAlignment="center"
+          android:textSize="20sp"
+          android:textStyle="bold" />
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="n"
+          android:textAlignment="center"
+          android:textSize="50sp"
+          android:textStyle="bold" />
+    </LinearLayout>
+
+    <!--    아직 못한 일-->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:background="@drawable/setting_mini_layout"
+        android:orientation="vertical"
+        android:layout_margin="10dp"
+        android:paddingVertical="30dp">
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="아직 못한 일"
+          android:textAlignment="center"
+          android:textSize="20sp"
+          android:textStyle="bold" />
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="n"
+          android:textAlignment="center"
+          android:textSize="50sp"
+          android:textStyle="bold" />
+    </LinearLayout>
+
+
+  </LinearLayout>
+
+</LinearLayout>

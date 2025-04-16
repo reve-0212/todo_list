@@ -39,6 +39,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     setContentView(binding.root)
     enableEdgeToEdge()
 
+    val toolbarBodyTemplate = binding.toolbar
+    setSupportActionBar(toolbarBodyTemplate)
+    supportActionBar?.setDisplayShowTitleEnabled(false)
+    toolbarBodyTemplate.title = "오늘 할 일"
+
 //    시스템 UI 에 맞게 padding 조절
     ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
       val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -66,7 +71,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     binding.futureTodoListShow.setOnClickListener {
       supportFragmentManager.commit {
         setReorderingAllowed(true)
-//        replace<FutureTodoListFragment>(R.id.todo_fragment_container)
+        replace<FutureTodoListFragment>(R.id.todo_fragment_container)
+      }
+    }
+
+    binding.completedListShow.setOnClickListener {
+      supportFragmentManager.commit{
+        setReorderingAllowed(true)
+        replace<RecordTodoFragment>(R.id.todo_fragment_container)
       }
     }
 
@@ -74,6 +86,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 //    할일 추가 버튼을 누르면 입력 다이얼로그가 나온다
     binding.writeTodoList.setOnClickListener {
       Log.d("todoList", "writeTodoList 누름")
+
+//      현재 프레그먼트 확인
+      val currentFragment = supportFragmentManager.findFragmentById(R.id.todo_fragment_container)
 
       val sheetBinding = LayoutBottomSheetBinding.inflate(layoutInflater)
       val dialog = BottomSheetDialog(this)
@@ -169,7 +184,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
           //프래그먼트 새로고침
           supportFragmentManager.commit {
             setReorderingAllowed(true)
-            replace<TodoListFragment>(R.id.todo_fragment_container)
+            when (currentFragment) {
+              is FutureTodoListFragment -> {
+                replace<FutureTodoListFragment>(R.id.todo_fragment_container)
+              }
+              else -> {
+                replace<TodoListFragment>(R.id.todo_fragment_container)
+              }
+            }
           }
         } else {
           Log.d("todoList", "이름 입력")
