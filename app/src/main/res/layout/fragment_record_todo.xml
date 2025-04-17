@@ -75,8 +75,8 @@
     </LinearLayout>
   </LinearLayout>
 
-  <com.github.mikephil.charting.charts.BarChart
-      android:id="@+id/todo_bar_chart"
+  <com.github.mikephil.charting.charts.PieChart
+      android:id="@+id/todo_pie_chart"
       android:layout_width="match_parent"
       android:layout_height="0dp"
       android:layout_weight="2"/>

@@ -3,6 +3,7 @@ package com.example.simjihyun_todo
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -12,24 +13,18 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.simjihyun_todo.databinding.FragmentTodoListBinding
 import com.example.simjihyun_todo.databinding.ItemTodoBinding
 import androidx.core.graphics.drawable.toDrawable
-import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Locale
+import kotlin.apply
 
-//start date 가 오늘인것만
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class TodoListFragment : Fragment() {
   //  먼저 todoListBinding 에 null 을 넣는다
@@ -38,6 +33,11 @@ class TodoListFragment : Fragment() {
   //  외부에서는 binding 을 통해서 안전하게 사용한다
   private val binding get() = todoListBinding!!
 
+  /*다른 액티비티를 실행했다가 돌아왔을 때 결과를 처리하는 콜백함수
+    startActivityForResult() : 다른 액티비티를 실행한다
+    그 액티비티가 끝나면서 (finish) 결과를 넘긴다
+    결과가 result_ok 고 intent 안에 updated 가 true 라는 값이 있다면
+    리스트를 새로고침한다*/
   private val todoActivityLauncher = registerForActivityResult(
     ActivityResultContracts.StartActivityForResult()
   ) { result ->
@@ -69,11 +69,13 @@ class TodoListFragment : Fragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
+//    mainActivity 에 있는 setTollbarTitle을 오늘 할일로 바꾼다
     (activity as? MainActivity)?.setToolbarTitle("오늘 할 일")
 
-    //    todo_recycler 를 찾아서 recyclerView 에 할당한다
+    // todo_recycler 와 completedRecycler 를 찾아서 각각의 recyclerView 에 할당한다
     val todoRecycler = binding.todoRecycler
     val completedRecycler = binding.completedRecycler
+//    리스트가 있는지 없는지 확인하기 위해 넣은 변수
     val title = binding.completedTitle
 
 //    왼쪽으로 스와이프하면 삭제되는 기능을 넣기 위해 itemTouchHelper 를 사용한다
@@ -87,7 +89,7 @@ class TodoListFragment : Fragment() {
           return false
         }
 
-        //  왼쪽으로 밀면 해당 포지션에 있는 아이템의 이름을 가져와서 삭제한다
+        //  왼쪽으로 밀면 해당 포지션에 있는 아이템의 아이디를 가져와서 삭제한다
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
           val position = viewHolder.adapterPosition
           val id = (todoRecycler.adapter as TodoAdapter).getItem(position).id
@@ -100,7 +102,7 @@ class TodoListFragment : Fragment() {
           reload()
         }
 
-        // 왼쪽으로 밀면 휴지통 나오게
+        // recyclerView 에서 아이템을 왼쪽이나 오른쪽으로 스와이프 할 때 배경과 아이콘(휴지통) 을 그려주는 함수
         override fun onChildDraw(
           c: Canvas,
           recyclerView: RecyclerView,
@@ -110,33 +112,7 @@ class TodoListFragment : Fragment() {
           actionState: Int,
           isCurrentlyActive: Boolean
         ) {
-          val itemView = viewHolder.itemView
-
-          if (dX != 0f || isCurrentlyActive) {
-            val background = Color.RED.toDrawable()
-            background.setBounds(
-              itemView.right + dX.toInt(),
-              itemView.top,
-              itemView.right,
-              itemView.bottom
-            )
-            background.draw(c)
-
-            // 휴지통 아이콘을 가져온다
-            val icon = ContextCompat.getDrawable(requireContext(), R.drawable.trash_bin)!!
-
-            // 마진 등을 설정한다
-            val iconMargin = (itemView.height - icon.intrinsicHeight) / 2
-            val iconTop = itemView.top + iconMargin
-            val iconLeft = itemView.right - icon.intrinsicWidth - iconMargin
-            val iconRight = itemView.right - iconMargin
-            val iconBottom = iconTop + icon.intrinsicHeight
-
-            // 그리고 그린다
-            icon.setBounds(iconLeft, iconTop, iconRight, iconBottom)
-            icon.draw(c)
-          }
-
+          drawSwipeBackground(c, viewHolder, dX)
           super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
         }
       })
@@ -174,24 +150,30 @@ class TodoListFragment : Fragment() {
     todoRecycler.layoutManager = LinearLayoutManager(requireContext())
     completedRecycler.layoutManager = LinearLayoutManager(requireContext())
 
+//    오늘 날짜를 todayDate 라는 변수에 저장한다
     val todayDate = LocalDateTime.now()
     val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     Log.d("todoList", "todayDate : ${todayDate.format(dateFormatter)}")
+//    yyyy-MM-dd 형식으로 포맷한다
     val today = todayDate.format(dateFormatter)
 
-//    TODO_LIST 에 있는 오늘 날짜의 모든 name과 is_completed 를 가져온다
+//    TODO_LIST 에 있는 오늘 날짜의 모든 정보를 가져온다
     val dbHelper = DBHelper(requireContext())
     val db = dbHelper.readableDatabase
     val cursor = db.rawQuery(
       "select id, name, start_date, end_date, complete_date, is_completed, is_important, memo from TODO_LIST where date(start_date) = date(?)",
       arrayOf(today)
     )
+
+//    완료하지 않은 일이 들어갈 리스트
     val todoList = mutableListOf<TodoItem>()
+//    완료할 일이 들어간 리스트
     val completedList = mutableListOf<TodoItem>()
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
-//    다음 줄이 있다면 0번째 값(name)과 1번째 값(is_completed) 를
+//    다음 줄이 있다면 name 과 isCompleted 값으로 나눠서
 //    완료 여부에 따라 completedList 와 todoList 로 나눠서 저장한다
+//    만일 completeDate 가 없다면 null 을 반환하고, 있다면 yyyy-MM-dd HH:mm:ss 형식으로 바꾼다
     while (cursor.moveToNext()) {
       val id = cursor.getInt(0)
       val name = cursor.getString(1)
@@ -207,19 +189,21 @@ class TodoListFragment : Fragment() {
       val isImportant = cursor.getString(6) == "Y"
       val memo = cursor.getString(7) ?: ""
 
+//      item 에 db 에서 읽어온 값을 넣는다
       val item =
         TodoItem(
           id, name, startDate, endDate,
           completeDateParse, isCompleted, isImportant, memo
         )
+
+//      item 이 완료했다면 (true) 라면 completedList 에 넣는다
+//      아니라면 todoList 에 넣는다
       if (item.isCompleted) {
         completedList.add(item)
       } else {
         todoList.add(item)
       }
     }
-    Log.d("todoList", "할일 목록 : $todoList")
-    Log.d("todoList", "완료 목록 : $completedList")
 
 //    만일 완료된 일이 없다면 관련 뷰를 숨긴다
     if (completedList.isEmpty()) {
@@ -261,13 +245,41 @@ class TodoListFragment : Fragment() {
     }
   }
 
-  //  체크박스를 누르면 리스트를 새로고침한다
+  //  프래그먼트를 다시 붙여서 리스트를 새로고침한다
   @SuppressLint("DetachAndAttachSameFragment")
   private fun reload() {
     parentFragmentManager.beginTransaction()
       .replace(id, TodoListFragment())
       .commit()
   }
+
+  //  빨간 배경과 휴지통이 나오게 도와줄 함수
+  private fun drawSwipeBackground(c: Canvas, viewHolder: RecyclerView.ViewHolder, dX: Float) {
+    val itemView = viewHolder.itemView
+    val paint = Paint().apply { color = Color.RED }
+    val icon = BitmapFactory.decodeResource(resources, R.drawable.trash_bin)
+
+    val iconMargin = (itemView.height - icon.height) / 2
+
+
+    // 배경 빨간색 그리기
+    c.drawRect(
+      itemView.right.toFloat() + dX,
+      itemView.top.toFloat(),
+      itemView.right.toFloat(),
+      itemView.bottom.toFloat(),
+      paint
+    )
+
+    // 아이콘 그리기
+    c.drawBitmap(
+      icon,
+      itemView.right - iconMargin - icon.width.toFloat(),
+      itemView.top + iconMargin.toFloat(),
+      null
+    )
+  }
+
 }
 
 @Suppress("TYPE_INTERSECTION_AS_REIFIED_WARNING")
@@ -289,7 +301,7 @@ class TodoAdapter(
     * parent : RecyclerView 안에서 각 항목(item) 의 부모. 이 item 을 어디 붙일지 나타냄
     * LayoutInflater.from(parent.context) : xml 을 실제 코드에서 사용할 수 있도록 View 로 만든다
     * parent.context : 부모가 가지고 있는 context
-    * false : 지금 당장 parent 에 붙이지는 말고, 그냥 view 만 만들어달라 요청*/
+    * false : 바로 parent 에 붙이지 않고, 나중에 RecyclerView 가 직접 붙이도록 한다 */
     val binding = ItemTodoBinding.inflate(LayoutInflater.from(parent.context), parent, false)
     return TodoViewHolder(binding)
   }
@@ -341,10 +353,11 @@ class TodoAdapter(
         arrayOf(todo.id)
       )
       db.close()
-//      중요도 정보 반영
+//      메모리 상에서도 중요도 정보 반영
       todo.isImportant = true
     }
 
+//    노란 별을 누르면 blankStar 가 나오고 중요하지 않다고 업데이트한다
     binding.filledStar.setOnClickListener {
       binding.blankStar.visibility = View.VISIBLE
       binding.filledStar.visibility = View.GONE
@@ -366,10 +379,12 @@ class TodoAdapter(
       val dbHelper = DBHelper(holder.itemView.context)
       val db = dbHelper.writableDatabase
       val now = LocalDateTime.now()
+
       val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+//      완료되었다면 (isChecked) 가 true 라면 now 값을 formatter 형식(yyyy-MM-dd HH:mm:ss) 로 바꾼다
+      val completeDateFormat = if (isChecked) now.format(formatter) else null
 
-      val completeDateFormat = if(isChecked) now.format(formatter) else null
-
+//      isChecked 라면 Y, 아니라면 N을 is_completed 에 넣는다
       db.execSQL(
         "update TODO_LIST set complete_date=?, is_completed = ? where id = ?",
         arrayOf(completeDateFormat, if (isChecked) "Y" else "N", todo.id)
